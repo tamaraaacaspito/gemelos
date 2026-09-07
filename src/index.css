@@ -1,0 +1,22 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Ensure full height */
+html,
+body,
+#root {
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+/* Custom selection colors */
+::selection {
+  background-color: rgb(139 92 246 / 0.3);
+  color: rgb(76 29 149);
+}
