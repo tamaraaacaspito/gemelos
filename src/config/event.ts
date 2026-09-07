@@ -11,11 +11,11 @@ export const EVENT_CONFIG = {
   emoji: '👯‍♀️',
 
   /** Tagline shown below the title */
-  tagline: 'Dos outfits. Una misión. 🤫',
+  tagline: 'Dos outfits. Una misión.',
 
   /** Description shown on the landing page */
   description:
-    'Este sábado tendremos una dinámica especial. Regístrate, descubre quién será tu gemelo y coordinen un outfit para venir combinados.',
+    'Regístrate, descubre quién será tu gemelo y coordinen un outfit para venir combinados.',
 
   /** Default event date (ISO format). Can be overridden from admin panel. */
   defaultEventDate: '2026-09-12',
@@ -29,10 +29,10 @@ export const EVENT_CONFIG = {
  */
 export function getWhatsAppMessage(senderName: string): string {
   return [
-    `👯‍♀️ ¡Hola! Soy ${senderName}, tu gemelo/a de la dinámica 🤫`,
+    `¡Hola! Soy ${senderName}, tu gemelo/a de la dinámica`,
     '',
-    'Nos toca vestirnos como gemelos este sábado.',
+    'Nos toca hacer match este sábado.',
     '',
-    '¿Coordinamos nuestro outfit? 👀',
+    '¿Coordinamos el outfit?',
   ].join('\n');
 }

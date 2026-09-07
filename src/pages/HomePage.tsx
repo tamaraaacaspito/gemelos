@@ -54,6 +54,7 @@ export function HomePage() {
         transition={{ duration: 0.6, ease: 'easeOut' }}
         className="text-center space-y-4"
       >
+        {/*
         <motion.span
           className="text-7xl md:text-8xl block"
           animate={{ rotate: [0, -5, 5, -5, 0] }}
@@ -61,6 +62,7 @@ export function HomePage() {
         >
           {EVENT_CONFIG.emoji}
         </motion.span>
+        */}
 
         <h1 className="text-5xl md:text-6xl font-black bg-gradient-to-r from-violet-600 to-cyan-500 bg-clip-text text-transparent">
           {EVENT_CONFIG.name.toUpperCase()}
@@ -71,12 +73,14 @@ export function HomePage() {
         </p>
       </motion.div>
 
-      {/* Description Card */}
+      
+      {/* Description Card 
       <Card>
         <p className="text-gray-600 text-center leading-relaxed text-lg">
           {EVENT_CONFIG.description}
         </p>
       </Card>
+      */}
 
       {/* Status & Date */}
       {settings && (
