@@ -86,6 +86,12 @@ export async function getParticipantsAdmin(): Promise<Participant[]> {
   return (data as Participant[]) ?? [];
 }
 
+/** Delete a participant (admin only). */
+export async function deleteParticipant(id: string): Promise<void> {
+  const { error } = await supabase.rpc('delete_participant', { p_id: id });
+  if (error) throw new Error(parseError(error));
+}
+
 /** Open or close registration (admin only). */
 export async function toggleRegistration(open: boolean): Promise<void> {
   const { error } = await supabase.rpc('toggle_registration', { p_open: open });
