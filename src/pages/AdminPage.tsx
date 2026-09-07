@@ -59,7 +59,7 @@ function LoginForm({ onSignIn }: { onSignIn: (email: string, password: string) =
   };
 
   return (
-    <div className="pt-12">
+    <div className="w-full my-auto py-4">
       <Card>
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="text-center">

@@ -23,7 +23,7 @@ export function RegisterPage() {
   // Registration closed or draw completed
   if (settings && (!settings.registration_open || settings.draw_completed)) {
     return (
-      <div className="pt-6 sm:pt-10 md:pt-12 space-y-4 sm:space-y-6">
+      <div className="w-full my-auto py-2 sm:py-4 space-y-4">
         <Card>
           <div className="text-center space-y-4">
             <StatusBadge
@@ -61,7 +61,7 @@ export function RegisterPage() {
     };
 
     return (
-      <div className="pt-6 sm:pt-10 md:pt-12 space-y-4 sm:space-y-6">
+      <div className="w-full my-auto py-2 sm:py-4 space-y-4">
         <Card>
           <motion.div
             initial={{ scale: 0.8, opacity: 0 }}
@@ -135,7 +135,7 @@ export function RegisterPage() {
   };
 
   return (
-    <div className="pt-6 sm:pt-10 md:pt-12 space-y-4 sm:space-y-6">
+    <div className="w-full my-auto py-2 sm:py-4 space-y-4">
       <Card>
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="text-center">

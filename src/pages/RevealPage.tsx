@@ -85,7 +85,7 @@ export function RevealPage() {
   // Draw hasn't happened yet
   if (settings && !settings.draw_completed) {
     return (
-      <div className="pt-12">
+      <div className="w-full my-auto py-4">
         <Card>
           <div className="text-center space-y-4">
             <span className="text-5xl block">⏳</span>
@@ -103,7 +103,7 @@ export function RevealPage() {
   }
 
   return (
-    <div className="pt-6 sm:pt-10 md:pt-12 space-y-4 sm:space-y-6">
+    <div className="w-full my-auto py-2 sm:py-4 space-y-4">
       <AnimatePresence mode="wait">
         {/* Phase 1: Name Selection */}
         {phase === 'input' && (
