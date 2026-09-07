@@ -144,7 +144,7 @@ export function HomePage() {
 
         <Link to="/descubrir">
           <Button variant="ghost" size="md" className="w-full">
-            🤫 Ir a descubrir mi gemelo
+            Ir a descubrir mi gemelo 🎉
           </Button>
         </Link>
       </motion.div>

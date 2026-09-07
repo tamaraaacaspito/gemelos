@@ -78,21 +78,25 @@ ALTER TABLE app_settings ENABLE ROW LEVEL SECURITY;
 ALTER TABLE participants ENABLE ROW LEVEL SECURITY;
 
 -- admin_users: only real admins can read/manage
+DROP POLICY IF EXISTS "Admin access to admin_users" ON admin_users;
 CREATE POLICY "Admin access to admin_users"
   ON admin_users FOR ALL
   USING (is_admin());
 
 -- app_settings: anyone can read, only real admin can update
+DROP POLICY IF EXISTS "Public read settings" ON app_settings;
 CREATE POLICY "Public read settings"
   ON app_settings FOR SELECT
   USING (true);
 
+DROP POLICY IF EXISTS "Admin update settings" ON app_settings;
 CREATE POLICY "Admin update settings"
   ON app_settings FOR UPDATE
   USING (is_admin());
 
 -- participants: only real admins can access the table directly.
 -- Public operations (register, list names for dropdown, reveal) go through RPC functions below.
+DROP POLICY IF EXISTS "Admin full access to participants" ON participants;
 CREATE POLICY "Admin full access to participants"
   ON participants FOR ALL
   USING (is_admin());
@@ -129,6 +133,7 @@ $$;
 
 -- Get list of registered participant names for dropdown selection (public)
 -- Only returns id and name, NEVER secret_code or partner_id
+DROP FUNCTION IF EXISTS get_public_participants();
 CREATE OR REPLACE FUNCTION get_public_participants()
 RETURNS json
 LANGUAGE plpgsql
@@ -210,6 +215,7 @@ $$;
 
 -- Reveal partner by participant name (case-insensitive)
 -- Returns JSON: { participant_name, partner_name }
+DROP FUNCTION IF EXISTS reveal_partner(text);
 CREATE OR REPLACE FUNCTION reveal_partner(p_name text)
 RETURNS json
 LANGUAGE plpgsql
