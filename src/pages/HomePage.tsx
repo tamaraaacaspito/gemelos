@@ -47,89 +47,84 @@ export function HomePage() {
       : null;
 
   return (
-    <div className="pt-6 sm:pt-10 md:pt-16 space-y-6 sm:space-y-8">
+    <div className="w-full my-auto py-6 sm:py-8 space-y-6 sm:space-y-8">
       {/* Hero */}
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, ease: 'easeOut' }}
-        className="text-center space-y-3 sm:space-y-4"
+        className="text-center space-y-2 sm:space-y-3"
       >
-        <span className="inline-block text-4xl sm:text-5xl mb-1">
+        <motion.span
+          className="inline-block text-5xl sm:text-6xl mb-1 filter drop-shadow-sm"
+          animate={{ scale: [1, 1.1, 1], rotate: [0, 5, -5, 0] }}
+          transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+        >
           {EVENT_CONFIG.emoji}
-        </span>
+        </motion.span>
 
-        <h1 className="text-4xl sm:text-5xl md:text-6xl font-black bg-gradient-to-r from-violet-600 to-cyan-500 bg-clip-text text-transparent tracking-tight">
+        <h1 className="text-4xl sm:text-5xl md:text-6xl font-black bg-gradient-to-r from-violet-600 via-indigo-600 to-cyan-500 bg-clip-text text-transparent tracking-tight">
           {EVENT_CONFIG.name.toUpperCase()}
         </h1>
 
-        <p className="text-lg sm:text-xl md:text-2xl font-semibold text-gray-600 max-w-sm sm:max-w-md mx-auto px-2">
+        <p className="text-base sm:text-lg md:text-xl font-medium text-gray-500 max-w-xs sm:max-w-md mx-auto">
           {EVENT_CONFIG.tagline}
         </p>
       </motion.div>
 
-      
+      {/* Main Dynamic Card */}
+      <Card className="text-center space-y-5 sm:space-y-6 !p-6 sm:!p-8 shadow-xl shadow-violet-500/10 border border-violet-100/60 backdrop-blur-md">
+        {settings && (
+          <div className="space-y-3 sm:space-y-4">
+            <StatusBadge
+              registrationOpen={settings.registration_open}
+              drawCompleted={settings.draw_completed}
+            />
 
+            {formattedDate && (
+              <div>
+                <div className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full bg-violet-50/80 border border-violet-100/80 text-xs sm:text-sm text-gray-700 font-medium">
+                  <span>📅</span>
+                  <span className="capitalize">{formattedDate}</span>
+                </div>
+              </div>
+            )}
 
-      {/* Status & Date */}
-      {settings && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.3 }}
-          className="flex flex-col items-center gap-4"
-        >
-          <StatusBadge
-            registrationOpen={settings.registration_open}
-            drawCompleted={settings.draw_completed}
-          />
-
-          {formattedDate && (
-            <p className="text-gray-500 font-medium">
-              {EVENT_CONFIG.eventDateLabel} &mdash;{' '}
-              <span className="text-gray-800 capitalize">{formattedDate}</span>
-            </p>
-          )}
-
-          {participantCount !== null && participantCount > 0 && (
-            <p className="text-sm text-gray-400">
-              {participantCount} participante{participantCount !== 1 ? 's' : ''} registrado{participantCount !== 1 ? 's' : ''}
-            </p>
-          )}
-        </motion.div>
-      )}
-
-      {/* CTA Buttons */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.4 }}
-        className="flex flex-col gap-3"
-      >
-        {settings?.registration_open && !settings.draw_completed && (
-          <Link to="/participar">
-            <Button variant="primary" size="lg" className="w-full">
-              ✋ QUIERO PARTICIPAR
-            </Button>
-          </Link>
-        )}
-
-        {settings?.draw_completed && (
-          <Link to="/descubrir">
-            <Button variant="primary" size="lg" className="w-full">
-              🔍 DESCUBRIR MI GEMELO
-            </Button>
-          </Link>
-        )}
-
-        {!settings?.registration_open && !settings?.draw_completed && (
-          <div className="text-center py-2">
-            <p className="text-gray-500 font-medium">
-              🔒 El registro está cerrado. El sorteo será pronto.
-            </p>
+            {participantCount !== null && participantCount > 0 && (
+              <p className="text-xs sm:text-sm text-gray-400 font-medium">
+                👥 {participantCount} participante{participantCount !== 1 ? 's' : ''} registrado{participantCount !== 1 ? 's' : ''}
+              </p>
+            )}
           </div>
         )}
-      </motion.div>
+
+        {/* CTA Buttons */}
+        <div className="pt-2">
+          {settings?.registration_open && !settings.draw_completed && (
+            <Link to="/participar" className="block">
+              <Button variant="primary" size="lg" className="w-full text-base sm:text-lg font-bold py-3.5 sm:py-4 shadow-xl shadow-violet-500/25">
+                ✋ QUIERO PARTICIPAR
+              </Button>
+            </Link>
+          )}
+
+          {settings?.draw_completed && (
+            <Link to="/descubrir" className="block">
+              <Button variant="primary" size="lg" className="w-full text-base sm:text-lg font-bold py-3.5 sm:py-4 shadow-xl shadow-violet-500/25">
+                🔍 DESCUBRIR MI GEMELO
+              </Button>
+            </Link>
+          )}
+
+          {!settings?.registration_open && !settings?.draw_completed && (
+            <div className="py-2">
+              <p className="text-gray-500 font-medium text-sm sm:text-base">
+                🔒 El registro está cerrado. El sorteo será pronto.
+              </p>
+            </div>
+          )}
+        </div>
+      </Card>
     </div>
   );
 }
