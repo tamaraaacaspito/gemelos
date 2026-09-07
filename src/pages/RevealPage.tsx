@@ -7,7 +7,6 @@ import { Loading } from '../components/ui/Loading';
 import { useAppSettings } from '../hooks/useAppSettings';
 import { revealPartner, getPublicParticipants } from '../services/supabase';
 import { getWhatsAppMessage } from '../config/event';
-import { getWhatsAppShareUrl } from '../utils/whatsapp';
 import type { RevealResult, PublicParticipant } from '../types';
 
 type Phase = 'input' | 'countdown' | 'reveal';
@@ -282,16 +281,23 @@ export function RevealPage() {
                   transition={{ delay: 1 }}
                   className="space-y-3"
                 >
-                  <a
-                    href={getWhatsAppShareUrl(getWhatsAppMessage(result.participant_name))}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="block"
+                  <Button
+                    onClick={async () => {
+                      try {
+                        await navigator.clipboard.writeText(
+                          getWhatsAppMessage(result.participant_name)
+                        );
+                        toast.success('¡Mensaje copiado al portapapeles! 🎉');
+                      } catch {
+                        toast.error('No se pudo copiar automáticamente.');
+                      }
+                    }}
+                    variant="secondary"
+                    size="lg"
+                    className="w-full shadow-lg shadow-cyan-500/25"
                   >
-                    <Button variant="secondary" size="lg" className="w-full">
-                      💬 COORDINAR POR WHATSAPP
-                    </Button>
-                  </a>
+                    📋 COPIAR MENSAJE PARA MI GEMELO
+                  </Button>
 
                   <Button
                     variant="ghost"
