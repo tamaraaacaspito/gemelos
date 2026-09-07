@@ -38,6 +38,7 @@ Mini aplicación web para organizar una dinámica grupal donde los participantes
    - Tabla `participants` (participantes y sus parejas)
    - Políticas RLS (seguridad a nivel de fila)
    - Funciones RPC (registro, sorteo, revelación)
+4. Ejecuta también, en orden, las migraciones posteriores de [`supabase/migrations/`](supabase/migrations/) para mantener las funciones administrativas actualizadas.
 
 ### 1.3 Usuario administrador
 

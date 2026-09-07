@@ -28,7 +28,7 @@ export function Layout({ children }: LayoutProps) {
         }}
       />
       <Header />
-      <main className="w-full flex-1 flex flex-col justify-center max-w-lg sm:max-w-xl md:max-w-2xl mx-auto px-4 sm:px-6 py-2 sm:py-4 overflow-y-auto overscroll-none">
+      <main className="w-full flex-1 min-h-0 flex flex-col justify-center max-w-lg sm:max-w-xl md:max-w-2xl mx-auto px-4 sm:px-6 py-2 sm:py-4 overflow-y-auto overscroll-contain">
         {children}
       </main>
     </div>

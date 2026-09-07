@@ -11,6 +11,7 @@ import { useAuth } from '../hooks/useAuth';
 import { useAppSettings } from '../hooks/useAppSettings';
 import {
   getParticipantsAdmin,
+  deleteParticipant,
   toggleRegistration,
   performDraw,
   resetDraw,
@@ -108,6 +109,7 @@ function AdminDashboard({ onSignOut }: { onSignOut: () => Promise<void> }) {
   const [actionLoading, setActionLoading] = useState(false);
   const [showDrawModal, setShowDrawModal] = useState(false);
   const [showResetModal, setShowResetModal] = useState(false);
+  const [participantToDelete, setParticipantToDelete] = useState<Participant | null>(null);
   const [editingDate, setEditingDate] = useState(false);
   const [dateValue, setDateValue] = useState('');
 
@@ -181,6 +183,22 @@ function AdminDashboard({ onSignOut }: { onSignOut: () => Promise<void> }) {
     }
   };
 
+  const handleDeleteParticipant = async () => {
+    if (!participantToDelete) return;
+
+    try {
+      setActionLoading(true);
+      await deleteParticipant(participantToDelete.id);
+      setParticipants((current) => current.filter((p) => p.id !== participantToDelete.id));
+      setParticipantToDelete(null);
+      toast.success(`${participantToDelete.name} eliminado`);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Error al eliminar participante');
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
   const handleDateSave = async () => {
     try {
       setActionLoading(true);
@@ -214,7 +232,7 @@ function AdminDashboard({ onSignOut }: { onSignOut: () => Promise<void> }) {
   }
 
   return (
-    <div className="pt-8 space-y-6">
+    <div className="w-full min-h-0 pt-8 pb-8 space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-2 min-w-0">
@@ -390,10 +408,23 @@ function AdminDashboard({ onSignOut }: { onSignOut: () => Promise<void> }) {
                 initial={{ opacity: 0, y: 5 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.03 }}
-                className="flex items-center justify-between bg-gray-50 rounded-xl px-3.5 sm:px-4 py-2.5 sm:py-3"
+                className="flex items-center justify-between gap-3 bg-gray-50 rounded-xl px-3.5 sm:px-4 py-2.5 sm:py-3"
               >
                 <span className="font-medium text-gray-700 text-sm sm:text-base truncate mr-2">{p.name}</span>
-                <span className="text-xs text-gray-400 font-mono flex-shrink-0">{p.secret_code}</span>
+                <div className="flex items-center gap-2 flex-shrink-0">
+                  <span className="text-xs text-gray-400 font-mono">{p.secret_code}</span>
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="danger"
+                    onClick={() => setParticipantToDelete(p)}
+                    disabled={actionLoading}
+                    aria-label={`Eliminar a ${p.name}`}
+                    className="!px-2 !py-1 text-xs"
+                  >
+                    ✕
+                  </Button>
+                </div>
               </motion.div>
             ))}
           </div>
@@ -436,6 +467,25 @@ function AdminDashboard({ onSignOut }: { onSignOut: () => Promise<void> }) {
           </Button>
           <Button variant="danger" className="flex-1" onClick={handleReset} loading={actionLoading}>
             Sí, reiniciar
+          </Button>
+        </div>
+      </Modal>
+
+      {/* Participant deletion confirmation modal */}
+      <Modal
+        isOpen={participantToDelete !== null}
+        onClose={() => setParticipantToDelete(null)}
+        title="🗑️ Eliminar participante"
+      >
+        <p className="text-gray-600 mb-6">
+          ¿Estás seguro de eliminar a <strong>{participantToDelete?.name}</strong>? Esta acción no se puede deshacer.
+        </p>
+        <div className="flex gap-3">
+          <Button variant="ghost" className="flex-1" onClick={() => setParticipantToDelete(null)}>
+            Cancelar
+          </Button>
+          <Button variant="danger" className="flex-1" onClick={handleDeleteParticipant} loading={actionLoading}>
+            Sí, eliminar
           </Button>
         </div>
       </Modal>
