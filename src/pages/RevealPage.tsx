@@ -116,7 +116,7 @@ export function RevealPage() {
             <Card>
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="text-center">
-                  <span className="text-5xl block mb-4">👯‍♀️</span>
+                  <span className="text-5xl block mb-4">✨</span>
                   <h2 className="text-2xl md:text-3xl font-bold text-gray-800">
                     ¿QUIÉN ES TU GEMELO?
                   </h2>
@@ -183,7 +183,7 @@ export function RevealPage() {
                   disabled={!selectedName || loadingParticipants}
                   className="w-full"
                 >
-                  ✨ DESCUBRIR MI GEMELO
+                  🔍 DESCUBRIR MI GEMELO
                 </Button>
               </form>
             </Card>
@@ -272,7 +272,7 @@ export function RevealPage() {
                   transition={{ delay: 0.8 }}
                   className="text-gray-600 text-lg"
                 >
-                  Ahora tienen una misión: ¡coordinen sus outfits y vengan combinados! 👯‍♀️
+                  Ahora tienen una misión: ¡coordinen sus outfits y vengan combinados! ✨
                 </motion.p>
 
                 <motion.div

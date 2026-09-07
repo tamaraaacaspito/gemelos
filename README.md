@@ -1,4 +1,4 @@
-# 👯‍♀️ Gemelos
+# ✨ Gemelos
 
 **Dos outfits. Una misión. 🤫**
 

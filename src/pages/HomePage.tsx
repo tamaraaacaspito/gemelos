@@ -129,7 +129,7 @@ export function HomePage() {
         {settings?.draw_completed && (
           <Link to="/descubrir">
             <Button variant="primary" size="lg" className="w-full">
-              ✨ DESCUBRIR MI GEMELO
+              🔍 DESCUBRIR MI GEMELO
             </Button>
           </Link>
         )}
