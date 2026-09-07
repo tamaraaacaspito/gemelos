@@ -373,7 +373,7 @@ BEGIN
   FROM participants;
 
   -- Clear any existing pairings
-  UPDATE participants SET partner_id = NULL;
+  UPDATE participants SET partner_id = NULL WHERE id IS NOT NULL;
 
   -- Create reciprocal pairs: (1,2), (3,4), (5,6), ...
   FOR i IN 1..array_length(v_shuffled, 1) BY 2 LOOP
@@ -406,7 +406,7 @@ BEGIN
   -- Acquire advisory lock to avoid race conditions with perform_draw
   PERFORM pg_advisory_xact_lock(73638105);
 
-  UPDATE participants SET partner_id = NULL;
+  UPDATE participants SET partner_id = NULL WHERE id IS NOT NULL;
   UPDATE app_settings
   SET draw_completed = false, updated_at = now()
   WHERE id = 1;
