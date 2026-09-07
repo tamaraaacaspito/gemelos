@@ -103,7 +103,7 @@ export function RevealPage() {
   }
 
   return (
-    <div className="pt-12 space-y-6">
+    <div className="pt-6 sm:pt-10 md:pt-12 space-y-4 sm:space-y-6">
       <AnimatePresence mode="wait">
         {/* Phase 1: Name Selection */}
         {phase === 'input' && (
@@ -114,13 +114,13 @@ export function RevealPage() {
             exit={{ opacity: 0, y: -20 }}
           >
             <Card>
-              <form onSubmit={handleSubmit} className="space-y-6">
+              <form onSubmit={handleSubmit} className="space-y-5 sm:space-y-6">
                 <div className="text-center">
-                  <span className="text-5xl block mb-4">✨</span>
-                  <h2 className="text-2xl md:text-3xl font-bold text-gray-800">
+                  <span className="text-4xl sm:text-5xl block mb-3">✨</span>
+                  <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-800 tracking-tight">
                     ¿QUIÉN ES TU GEMELO?
                   </h2>
-                  <p className="text-gray-500 mt-2">
+                  <p className="text-gray-500 mt-2 text-sm sm:text-base leading-relaxed">
                     Selecciona tu nombre en la lista para descubrir con quién tendrás que coordinar tu outfit.
                   </p>
                 </div>
@@ -249,8 +249,8 @@ export function RevealPage() {
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: 0.2 }}
                 >
-                  <span className="text-5xl block mb-2">🎉</span>
-                  <h2 className="text-2xl md:text-3xl font-bold text-gray-800">
+                  <span className="text-4xl sm:text-5xl block mb-2">🎉</span>
+                  <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-800">
                     ¡TU GEMELO ES!
                   </h2>
                 </motion.div>
@@ -259,9 +259,9 @@ export function RevealPage() {
                   initial={{ scale: 0.5, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
                   transition={{ delay: 0.5, type: 'spring', stiffness: 200 }}
-                  className="bg-gradient-to-r from-violet-600 to-cyan-500 rounded-2xl p-8"
+                  className="bg-gradient-to-r from-violet-600 to-cyan-500 rounded-2xl p-6 sm:p-8 shadow-md"
                 >
-                  <p className="text-4xl md:text-5xl font-black text-white">
+                  <p className="text-2xl sm:text-4xl md:text-5xl font-black text-white break-words tracking-tight leading-tight">
                     {result.partner_name}
                   </p>
                 </motion.div>
@@ -270,7 +270,7 @@ export function RevealPage() {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.8 }}
-                  className="text-gray-600 text-lg"
+                  className="text-gray-600 text-base sm:text-lg"
                 >
                   Ahora tienen una misión: ¡coordinen sus outfits y vengan combinados! ✨
                 </motion.p>

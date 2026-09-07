@@ -30,8 +30,8 @@ export function Modal({ isOpen, onClose, title, children }: ModalProps) {
             transition={{ duration: 0.2, ease: 'easeOut' }}
             className="fixed inset-0 z-50 flex items-center justify-center p-4"
           >
-            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 md:p-8">
-              <h3 className="text-xl font-bold text-gray-800 mb-4">{title}</h3>
+            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-5 sm:p-6 md:p-8 max-h-[90dvh] overflow-y-auto">
+              <h3 className="text-lg sm:text-xl font-bold text-gray-800 mb-4">{title}</h3>
               {children}
             </div>
           </motion.div>

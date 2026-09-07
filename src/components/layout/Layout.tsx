@@ -28,7 +28,9 @@ export function Layout({ children }: LayoutProps) {
         }}
       />
       <Header />
-      <main className="max-w-lg mx-auto px-4 pb-12">{children}</main>
+      <main className="w-full max-w-lg sm:max-w-xl md:max-w-2xl mx-auto px-3.5 sm:px-6 pb-12 sm:pb-16">
+        {children}
+      </main>
     </div>
   );
 }

@@ -19,7 +19,7 @@ export function Card({ children, className = '', animate = true }: CardProps) {
 
   return (
     <Wrapper
-      className={`bg-white rounded-2xl shadow-lg shadow-gray-200/50 p-6 md:p-8 ${className}`}
+      className={`bg-white rounded-2xl shadow-lg shadow-gray-200/50 p-5 sm:p-6 md:p-8 ${className}`}
       {...animationProps}
     >
       {children}

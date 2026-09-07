@@ -216,12 +216,14 @@ function AdminDashboard({ onSignOut }: { onSignOut: () => Promise<void> }) {
   return (
     <div className="pt-8 space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <span className="text-3xl">{EVENT_CONFIG.emoji}</span>
-          <h1 className="text-2xl font-bold text-gray-800">Panel de Organizador</h1>
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex items-center gap-2 min-w-0">
+          <span className="text-2xl sm:text-3xl flex-shrink-0">{EVENT_CONFIG.emoji}</span>
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-800 truncate">
+            Panel de Organizador
+          </h1>
         </div>
-        <Button variant="ghost" size="sm" onClick={onSignOut}>
+        <Button variant="ghost" size="sm" onClick={onSignOut} className="flex-shrink-0">
           Salir
         </Button>
       </div>
@@ -249,19 +251,21 @@ function AdminDashboard({ onSignOut }: { onSignOut: () => Promise<void> }) {
             <div>
               <p className="text-sm text-gray-500 font-medium">📅 Fecha del evento</p>
               {editingDate ? (
-                <div className="flex items-center gap-2 mt-2">
+                <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 mt-2">
                   <input
                     type="date"
                     value={dateValue}
                     onChange={(e) => setDateValue(e.target.value)}
-                    className="px-3 py-2 border-2 border-gray-200 rounded-lg text-sm focus:outline-none focus:border-violet-500"
+                    className="w-full sm:w-auto px-3 py-2 border-2 border-gray-200 rounded-lg text-sm focus:outline-none focus:border-violet-500"
                   />
-                  <Button size="sm" variant="primary" onClick={handleDateSave} loading={actionLoading}>
-                    Guardar
-                  </Button>
-                  <Button size="sm" variant="ghost" onClick={() => setEditingDate(false)}>
-                    ✕
-                  </Button>
+                  <div className="flex items-center gap-2 w-full sm:w-auto">
+                    <Button size="sm" variant="primary" onClick={handleDateSave} loading={actionLoading} className="flex-1 sm:flex-none">
+                      Guardar
+                    </Button>
+                    <Button size="sm" variant="ghost" onClick={() => setEditingDate(false)}>
+                      ✕
+                    </Button>
+                  </div>
                 </div>
               ) : (
                 <p className="text-lg font-semibold text-gray-800 mt-1">
@@ -350,11 +354,11 @@ function AdminDashboard({ onSignOut }: { onSignOut: () => Promise<void> }) {
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: i * 0.05 }}
-                className="flex items-center justify-between bg-violet-50 rounded-xl px-4 py-3"
+                className="grid grid-cols-[1fr_auto_1fr] items-center gap-2 bg-violet-50 rounded-xl px-3.5 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base"
               >
-                <span className="font-semibold text-violet-700">{a.name}</span>
-                <span className="text-gray-400">↔</span>
-                <span className="font-semibold text-cyan-600">{b.name}</span>
+                <span className="font-semibold text-violet-700 text-left truncate">{a.name}</span>
+                <span className="text-gray-400 font-bold px-1 select-none">↔</span>
+                <span className="font-semibold text-cyan-600 text-right truncate">{b.name}</span>
               </motion.div>
             ))}
           </div>
@@ -386,10 +390,10 @@ function AdminDashboard({ onSignOut }: { onSignOut: () => Promise<void> }) {
                 initial={{ opacity: 0, y: 5 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.03 }}
-                className="flex items-center justify-between bg-gray-50 rounded-xl px-4 py-3"
+                className="flex items-center justify-between bg-gray-50 rounded-xl px-3.5 sm:px-4 py-2.5 sm:py-3"
               >
-                <span className="font-medium text-gray-700">{p.name}</span>
-                <span className="text-xs text-gray-400 font-mono">{p.secret_code}</span>
+                <span className="font-medium text-gray-700 text-sm sm:text-base truncate mr-2">{p.name}</span>
+                <span className="text-xs text-gray-400 font-mono flex-shrink-0">{p.secret_code}</span>
               </motion.div>
             ))}
           </div>

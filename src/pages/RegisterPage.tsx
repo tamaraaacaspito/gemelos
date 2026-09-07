@@ -23,7 +23,7 @@ export function RegisterPage() {
   // Registration closed or draw completed
   if (settings && (!settings.registration_open || settings.draw_completed)) {
     return (
-      <div className="pt-12 space-y-6">
+      <div className="pt-6 sm:pt-10 md:pt-12 space-y-4 sm:space-y-6">
         <Card>
           <div className="text-center space-y-4">
             <StatusBadge
@@ -61,7 +61,7 @@ export function RegisterPage() {
     };
 
     return (
-      <div className="pt-12 space-y-6">
+      <div className="pt-6 sm:pt-10 md:pt-12 space-y-4 sm:space-y-6">
         <Card>
           <motion.div
             initial={{ scale: 0.8, opacity: 0 }}
@@ -70,17 +70,17 @@ export function RegisterPage() {
             className="text-center space-y-6"
           >
             <span className="text-6xl block">🎉</span>
-            <h2 className="text-2xl md:text-3xl font-bold text-gray-800">
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-800">
               ¡Ya estás dentro!
             </h2>
-            <p className="text-gray-600">
+            <p className="text-gray-600 text-sm sm:text-base">
               ¡Te has registrado con éxito como <strong className="text-violet-700">{result.name}</strong>! Cuando se realice el sorteo, podrás descubrir tu gemelo seleccionando tu nombre en la lista.
             </p>
 
             {/* Secret Code Display (optional receipt) */}
-            <div className="bg-gradient-to-r from-violet-100 to-cyan-100 rounded-2xl p-6">
-              <p className="text-sm text-gray-500 mb-1 font-medium">Tu código de registro (respaldo)</p>
-              <p className="text-3xl md:text-4xl font-black text-violet-700 tracking-wider">
+            <div className="bg-gradient-to-r from-violet-100 to-cyan-100 rounded-2xl p-4 sm:p-6">
+              <p className="text-xs sm:text-sm text-gray-500 mb-1 font-medium">Tu código de registro (respaldo)</p>
+              <p className="text-2xl sm:text-3xl md:text-4xl font-black text-violet-700 tracking-wider">
                 {result.secret_code}
               </p>
             </div>
@@ -135,7 +135,7 @@ export function RegisterPage() {
   };
 
   return (
-    <div className="pt-12 space-y-6">
+    <div className="pt-6 sm:pt-10 md:pt-12 space-y-4 sm:space-y-6">
       <Card>
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="text-center">

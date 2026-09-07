@@ -47,41 +47,29 @@ export function HomePage() {
       : null;
 
   return (
-    <div className="pt-8 md:pt-16 space-y-8">
+    <div className="pt-6 sm:pt-10 md:pt-16 space-y-6 sm:space-y-8">
       {/* Hero */}
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, ease: 'easeOut' }}
-        className="text-center space-y-4"
+        className="text-center space-y-3 sm:space-y-4"
       >
-        {/*
-        <motion.span
-          className="text-7xl md:text-8xl block"
-          animate={{ rotate: [0, -5, 5, -5, 0] }}
-          transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
-        >
+        <span className="inline-block text-4xl sm:text-5xl mb-1">
           {EVENT_CONFIG.emoji}
-        </motion.span>
-        */}
+        </span>
 
-        <h1 className="text-5xl md:text-6xl font-black bg-gradient-to-r from-violet-600 to-cyan-500 bg-clip-text text-transparent">
+        <h1 className="text-4xl sm:text-5xl md:text-6xl font-black bg-gradient-to-r from-violet-600 to-cyan-500 bg-clip-text text-transparent tracking-tight">
           {EVENT_CONFIG.name.toUpperCase()}
         </h1>
 
-        <p className="text-xl md:text-2xl font-semibold text-gray-600">
+        <p className="text-lg sm:text-xl md:text-2xl font-semibold text-gray-600 max-w-sm sm:max-w-md mx-auto px-2">
           {EVENT_CONFIG.tagline}
         </p>
       </motion.div>
 
       
-      {/* Description Card 
-      <Card>
-        <p className="text-gray-600 text-center leading-relaxed text-lg">
-          {EVENT_CONFIG.description}
-        </p>
-      </Card>
-      */}
+
 
       {/* Status & Date */}
       {settings && (
