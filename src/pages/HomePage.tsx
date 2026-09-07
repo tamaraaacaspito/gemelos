@@ -143,7 +143,7 @@ export function HomePage() {
 
         <Link to="/descubrir">
           <Button variant="ghost" size="md" className="w-full">
-            🤫 Ya tengo mi código
+            Ya tengo mi código
           </Button>
         </Link>
       </motion.div>
