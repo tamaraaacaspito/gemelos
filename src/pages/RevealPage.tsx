@@ -183,7 +183,7 @@ export function RevealPage() {
                   disabled={!selectedName || loadingParticipants}
                   className="w-full"
                 >
-                  🔍 DESCUBRIR MI GEMELO
+                  ✨ DESCUBRIR MI GEMELO
                 </Button>
               </form>
             </Card>

@@ -129,24 +129,18 @@ export function HomePage() {
         {settings?.draw_completed && (
           <Link to="/descubrir">
             <Button variant="primary" size="lg" className="w-full">
-              🔍 DESCUBRIR MI GEMELO
+              ✨ DESCUBRIR MI GEMELO
             </Button>
           </Link>
         )}
 
         {!settings?.registration_open && !settings?.draw_completed && (
-          <div className="text-center">
+          <div className="text-center py-2">
             <p className="text-gray-500 font-medium">
               🔒 El registro está cerrado. El sorteo será pronto.
             </p>
           </div>
         )}
-
-        <Link to="/descubrir">
-          <Button variant="ghost" size="md" className="w-full">
-            Ir a descubrir mi gemelo 🎉
-          </Button>
-        </Link>
       </motion.div>
     </div>
   );
