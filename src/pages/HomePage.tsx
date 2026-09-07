@@ -47,7 +47,7 @@ export function HomePage() {
       : null;
 
   return (
-    <div className="w-full my-auto py-6 sm:py-8 space-y-6 sm:space-y-8">
+    <div className="w-full my-auto py-2 sm:py-4 space-y-4 sm:space-y-6">
       {/* Hero */}
       <motion.div
         initial={{ opacity: 0, y: 30 }}

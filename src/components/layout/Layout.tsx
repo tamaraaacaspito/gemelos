@@ -8,7 +8,7 @@ interface LayoutProps {
 
 export function Layout({ children }: LayoutProps) {
   return (
-    <div className="min-h-screen min-h-[100dvh] flex flex-col bg-gradient-to-br from-violet-50 via-white to-cyan-50">
+    <div className="h-screen h-[100dvh] flex flex-col bg-gradient-to-br from-violet-50 via-white to-cyan-50 overflow-hidden">
       <Toaster
         position="top-center"
         toastOptions={{
@@ -28,7 +28,7 @@ export function Layout({ children }: LayoutProps) {
         }}
       />
       <Header />
-      <main className="w-full flex-1 flex flex-col justify-center max-w-lg sm:max-w-xl md:max-w-2xl mx-auto px-4 sm:px-6 py-6 sm:py-10">
+      <main className="w-full flex-1 flex flex-col justify-center max-w-lg sm:max-w-xl md:max-w-2xl mx-auto px-4 sm:px-6 py-2 sm:py-4 overflow-y-auto overscroll-none">
         {children}
       </main>
     </div>
