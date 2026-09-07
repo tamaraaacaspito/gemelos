@@ -39,14 +39,15 @@ Mini aplicación web para organizar una dinámica grupal donde los participantes
    - Políticas RLS (seguridad a nivel de fila)
    - Funciones RPC (registro, sorteo, revelación)
 
-### 1.3 Crear usuario administrador
+### 1.3 Usuario administrador
 
-1. En el dashboard de Supabase, ve a **Authentication → Users → Add User**.
-2. Crea un usuario con:
-   - **Email**: el email del organizador (ej: `admin@gemelos.app`)
-   - **Password**: una contraseña segura
-   - **Auto Confirm User**: ✅ activado
-3. Este será el único usuario que podrá acceder al panel de administrador en `/admin`.
+El script SQL pre-registra como administrador el correo:
+`admin@gemelos.app`
+
+En el dashboard de Supabase (Authentication → Users → Add User):
+- **Email**: `admin@gemelos.app`
+- **Password**: tu contraseña segura
+- **Auto Confirm User**: ✅ activado
 
 ---
 
@@ -91,11 +92,11 @@ La app estará disponible en `http://localhost:5173`.
 
 ### Flujo completo
 
-1. **Landing** (`/`): Los participantes ven la información del evento.
-2. **Registro** (`/participar`): Cada participante ingresa su nombre y recibe un código secreto único (ej: `GEM-4821`).
-3. **Admin** (`/admin`): El organizador cierra el registro y ejecuta el sorteo.
-4. **Descubrir** (`/descubrir`): Cada participante ingresa su código secreto para descubrir quién es su gemelo.
-5. **WhatsApp**: Los participantes pueden compartir un mensaje para coordinar su outfit.
+1. **Landing** (`/`): Los participantes ven la información y fecha del evento.
+2. **Registro** (`/participar`): Los participantes pueden registrarse ellos mismos o ser registrados por la organizadora.
+3. **Admin** (`/admin`): La organizadora inicia sesión con `admin@gemelos.app`, revisa los inscritos, cierra el registro y ejecuta el sorteo aleatorio.
+4. **Descubrir** (`/descubrir`): Cada participante simplemente selecciona su nombre de una **lista desplegable (dropdown)** y pulsa "Descubrir mi gemelo". Tras una animación 3-2-1-✨, descubre a su gemelo.
+5. **WhatsApp**: Un botón con el mensaje pre-cargado permite coordinar el outfit de inmediato con el gemelo.
 
 ### Panel de administrador
 

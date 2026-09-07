@@ -74,26 +74,26 @@ export function RegisterPage() {
               ¡Ya estás dentro!
             </h2>
             <p className="text-gray-600">
-              Guarda tu código secreto. Lo necesitarás para descubrir quién es tu gemelo.
+              ¡Te has registrado con éxito como <strong className="text-violet-700">{result.name}</strong>! Cuando se realice el sorteo, podrás descubrir tu gemelo seleccionando tu nombre en la lista.
             </p>
 
-            {/* Secret Code Display */}
+            {/* Secret Code Display (optional receipt) */}
             <div className="bg-gradient-to-r from-violet-100 to-cyan-100 rounded-2xl p-6">
-              <p className="text-sm text-gray-500 mb-2 font-medium">Tu código secreto</p>
-              <p className="text-4xl md:text-5xl font-black text-violet-700 tracking-wider">
+              <p className="text-sm text-gray-500 mb-1 font-medium">Tu código de registro (respaldo)</p>
+              <p className="text-3xl md:text-4xl font-black text-violet-700 tracking-wider">
                 {result.secret_code}
               </p>
             </div>
 
             <div className="space-y-3">
-              <Button onClick={handleCopy} variant="secondary" size="lg" className="w-full">
-                📋 COPIAR MI CÓDIGO
-              </Button>
               <Link to="/descubrir" className="block">
-                <Button variant="ghost" size="md" className="w-full">
+                <Button variant="primary" size="lg" className="w-full">
                   🔍 IR A DESCUBRIR MI GEMELO
                 </Button>
               </Link>
+              <Button onClick={handleCopy} variant="ghost" size="sm" className="w-full text-gray-500">
+                📋 Copiar código de respaldo
+              </Button>
             </div>
           </motion.div>
         </Card>

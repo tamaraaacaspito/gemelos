@@ -1,5 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
-import type { AppSettings, RegisterResult, RevealResult, Participant } from '../types';
+import type { AppSettings, RegisterResult, RevealResult, Participant, PublicParticipant } from '../types';
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
@@ -43,6 +43,13 @@ export async function getAppSettings(): Promise<AppSettings> {
   return data as AppSettings;
 }
 
+/** Get the list of registered participant names for dropdown selection. */
+export async function getPublicParticipants(): Promise<PublicParticipant[]> {
+  const { data, error } = await supabase.rpc('get_public_participants');
+  if (error) throw new Error(parseError(error));
+  return (data as PublicParticipant[]) ?? [];
+}
+
 /** Get the number of registered participants. */
 export async function getParticipantCount(): Promise<number> {
   const { data, error } = await supabase.rpc('get_participant_count');
@@ -59,10 +66,10 @@ export async function registerParticipant(name: string): Promise<RegisterResult>
   return data as RegisterResult;
 }
 
-/** Reveal the partner for a given secret code. */
-export async function revealPartner(secretCode: string): Promise<RevealResult> {
+/** Reveal the partner for a given participant name. */
+export async function revealPartner(name: string): Promise<RevealResult> {
   const { data, error } = await supabase.rpc('reveal_partner', {
-    p_secret_code: secretCode.trim().toUpperCase(),
+    p_name: name.trim(),
   });
   if (error) throw new Error(parseError(error));
   return data as RevealResult;

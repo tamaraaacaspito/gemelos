@@ -37,13 +37,14 @@ export function HomePage() {
   const eventDate = settings?.event_date
     ? new Date(settings.event_date + 'T12:00:00')
     : null;
-  const formattedDate = eventDate
-    ? eventDate.toLocaleDateString('es', {
-        weekday: 'long',
-        day: 'numeric',
-        month: 'long',
-      })
-    : null;
+  const formattedDate =
+    eventDate && !isNaN(eventDate.getTime())
+      ? eventDate.toLocaleDateString('es', {
+          weekday: 'long',
+          day: 'numeric',
+          month: 'long',
+        })
+      : null;
 
   return (
     <div className="pt-8 md:pt-16 space-y-8">
@@ -143,7 +144,7 @@ export function HomePage() {
 
         <Link to="/descubrir">
           <Button variant="ghost" size="md" className="w-full">
-            Ya tengo mi código
+            🤫 Ir a descubrir mi gemelo
           </Button>
         </Link>
       </motion.div>

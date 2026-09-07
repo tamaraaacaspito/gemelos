@@ -24,3 +24,8 @@ export interface RevealResult {
   participant_name: string;
   partner_name: string;
 }
+
+export interface PublicParticipant {
+  id: string;
+  name: string;
+}

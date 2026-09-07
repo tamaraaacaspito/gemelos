@@ -3,24 +3,39 @@ import { motion, AnimatePresence } from 'framer-motion';
 import toast from 'react-hot-toast';
 import { Button } from '../components/ui/Button';
 import { Card } from '../components/ui/Card';
-import { Input } from '../components/ui/Input';
 import { Loading } from '../components/ui/Loading';
 import { useAppSettings } from '../hooks/useAppSettings';
-import { revealPartner } from '../services/supabase';
+import { revealPartner, getPublicParticipants } from '../services/supabase';
 import { getWhatsAppMessage } from '../config/event';
 import { getWhatsAppShareUrl } from '../utils/whatsapp';
-import type { RevealResult } from '../types';
+import type { RevealResult, PublicParticipant } from '../types';
 
 type Phase = 'input' | 'countdown' | 'reveal';
 
 export function RevealPage() {
   const { settings, loading: settingsLoading } = useAppSettings();
-  const [code, setCode] = useState('');
+  const [participants, setParticipants] = useState<PublicParticipant[]>([]);
+  const [loadingParticipants, setLoadingParticipants] = useState(false);
+  const [selectedName, setSelectedName] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [phase, setPhase] = useState<Phase>('input');
   const [countdownNum, setCountdownNum] = useState(3);
   const [result, setResult] = useState<RevealResult | null>(null);
+
+  // Fetch registered participant names for dropdown
+  useEffect(() => {
+    if (settings?.draw_completed) {
+      setLoadingParticipants(true);
+      getPublicParticipants()
+        .then((data) => setParticipants(data))
+        .catch((err) => {
+          console.error(err);
+          toast.error('No se pudo cargar la lista de participantes');
+        })
+        .finally(() => setLoadingParticipants(false));
+    }
+  }, [settings?.draw_completed]);
 
   // Countdown timer
   useEffect(() => {
@@ -43,9 +58,9 @@ export function RevealPage() {
       e.preventDefault();
       setError('');
 
-      const trimmed = code.trim();
+      const trimmed = selectedName.trim();
       if (!trimmed) {
-        setError('Ingresa tu código secreto');
+        setError('Por favor selecciona tu nombre de la lista');
         return;
       }
 
@@ -63,7 +78,7 @@ export function RevealPage() {
         setLoading(false);
       }
     },
-    [code]
+    [selectedName]
   );
 
   if (settingsLoading) return <Loading />;
@@ -79,7 +94,7 @@ export function RevealPage() {
               El sorteo aún no se ha realizado
             </h2>
             <p className="text-gray-500">
-              Espera a que el organizador cierre el registro y realice el sorteo.
+              Espera a que la organizadora cierre el registro y realice el sorteo.
               ¡Pronto sabrás quién es tu gemelo!
             </p>
           </div>
@@ -91,7 +106,7 @@ export function RevealPage() {
   return (
     <div className="pt-12 space-y-6">
       <AnimatePresence mode="wait">
-        {/* Phase 1: Code Input */}
+        {/* Phase 1: Name Selection */}
         {phase === 'input' && (
           <motion.div
             key="input"
@@ -107,33 +122,69 @@ export function RevealPage() {
                     ¿QUIÉN ES TU GEMELO?
                   </h2>
                   <p className="text-gray-500 mt-2">
-                    Introduce tu código secreto para descubrir con quién tendrás que coordinar tu outfit.
+                    Selecciona tu nombre en la lista para descubrir con quién tendrás que coordinar tu outfit.
                   </p>
                 </div>
 
-                <Input
-                  label="Tu código secreto"
-                  placeholder="GEM-XXXX"
-                  value={code}
-                  onChange={(e) => {
-                    setCode(e.target.value.toUpperCase());
-                    setError('');
-                  }}
-                  error={error}
-                  maxLength={10}
-                  autoFocus
-                  autoComplete="off"
-                  className="text-center text-xl font-mono tracking-widest"
-                />
+                {loadingParticipants ? (
+                  <Loading text="Cargando participantes..." />
+                ) : (
+                  <div className="space-y-2">
+                    <label
+                      htmlFor="participant-select"
+                      className="block text-sm font-semibold text-gray-700"
+                    >
+                      ¿Quién eres tú?
+                    </label>
+
+                    <div className="relative">
+                      <select
+                        id="participant-select"
+                        value={selectedName}
+                        onChange={(e) => {
+                          setSelectedName(e.target.value);
+                          setError('');
+                        }}
+                        className={`
+                          w-full px-4 py-3.5 rounded-xl border-2 appearance-none
+                          bg-white text-gray-900 font-medium text-base
+                          shadow-sm cursor-pointer
+                          transition-all duration-200
+                          focus:outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20
+                          ${error ? 'border-red-400 bg-red-50' : 'border-violet-200 hover:border-violet-400'}
+                        `}
+                      >
+                        <option value="">-- Elige tu nombre --</option>
+                        {participants.map((p) => (
+                          <option key={p.id} value={p.name}>
+                            {p.name}
+                          </option>
+                        ))}
+                      </select>
+
+                      {/* Dropdown chevron icon */}
+                      <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-violet-600">
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7" />
+                        </svg>
+                      </div>
+                    </div>
+
+                    {error && (
+                      <p className="text-sm text-red-500 font-medium mt-1">{error}</p>
+                    )}
+                  </div>
+                )}
 
                 <Button
                   type="submit"
                   variant="primary"
                   size="lg"
                   loading={loading}
+                  disabled={!selectedName || loadingParticipants}
                   className="w-full"
                 >
-                  🔍 DESCUBRIR
+                  🔍 DESCUBRIR MI GEMELO
                 </Button>
               </form>
             </Card>
@@ -238,7 +289,7 @@ export function RevealPage() {
                     className="block"
                   >
                     <Button variant="secondary" size="lg" className="w-full">
-                      💬 COMPARTIR POR WHATSAPP
+                      💬 COORDINAR POR WHATSAPP
                     </Button>
                   </a>
 
@@ -248,11 +299,11 @@ export function RevealPage() {
                     className="w-full"
                     onClick={() => {
                       setPhase('input');
-                      setCode('');
+                      setSelectedName('');
                       setResult(null);
                     }}
                   >
-                    🔄 Consultar otro código
+                    🔄 Consultar otro nombre
                   </Button>
                 </motion.div>
               </div>

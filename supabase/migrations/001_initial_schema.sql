@@ -9,22 +9,33 @@
 -- 1. TABLES
 -- -------------------------------------------------------------------
 
--- App settings (singleton row)
+-- Table: admin_users (whitelist of authorized administrators)
+CREATE TABLE IF NOT EXISTS admin_users (
+  email text PRIMARY KEY,
+  created_at timestamptz NOT NULL DEFAULT now()
+);
+
+-- Insert the admin email
+INSERT INTO admin_users (email)
+VALUES ('admin@gemelos.app')
+ON CONFLICT (email) DO NOTHING;
+
+-- Table: app_settings (singleton row)
 CREATE TABLE IF NOT EXISTS app_settings (
   id int PRIMARY KEY DEFAULT 1,
   registration_open boolean NOT NULL DEFAULT true,
   draw_completed boolean NOT NULL DEFAULT false,
-  event_date text NOT NULL DEFAULT '',
+  event_date text NOT NULL DEFAULT '2026-09-12',
   updated_at timestamptz NOT NULL DEFAULT now(),
   CONSTRAINT singleton CHECK (id = 1)
 );
 
--- Insert the default settings row
+-- Insert the default settings row if it doesn't exist
 INSERT INTO app_settings (id, registration_open, draw_completed, event_date)
 VALUES (1, true, false, '2026-09-12')
 ON CONFLICT (id) DO NOTHING;
 
--- Participants
+-- Table: participants
 CREATE TABLE IF NOT EXISTS participants (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   name text NOT NULL,
@@ -39,43 +50,71 @@ CREATE UNIQUE INDEX IF NOT EXISTS participants_name_lower_idx
   ON participants (lower(trim(name)));
 
 -- -------------------------------------------------------------------
--- 2. ROW LEVEL SECURITY (RLS)
+-- 2. SECURITY HELPER FUNCTION
 -- -------------------------------------------------------------------
 
+-- Checks if the authenticated user's email is in the admin_users whitelist
+CREATE OR REPLACE FUNCTION is_admin()
+RETURNS boolean
+LANGUAGE plpgsql
+SECURITY DEFINER
+STABLE
+SET search_path = public
+AS $$
+BEGIN
+  RETURN EXISTS (
+    SELECT 1 FROM admin_users
+    WHERE lower(email) = lower(auth.jwt() ->> 'email')
+  );
+END;
+$$;
+
+-- -------------------------------------------------------------------
+-- 3. ROW LEVEL SECURITY (RLS)
+-- -------------------------------------------------------------------
+
+ALTER TABLE admin_users ENABLE ROW LEVEL SECURITY;
 ALTER TABLE app_settings ENABLE ROW LEVEL SECURITY;
 ALTER TABLE participants ENABLE ROW LEVEL SECURITY;
 
--- app_settings: anyone can read, only authenticated users can update
+-- admin_users: only real admins can read/manage
+CREATE POLICY "Admin access to admin_users"
+  ON admin_users FOR ALL
+  USING (is_admin());
+
+-- app_settings: anyone can read, only real admin can update
 CREATE POLICY "Public read settings"
   ON app_settings FOR SELECT
   USING (true);
 
 CREATE POLICY "Admin update settings"
   ON app_settings FOR UPDATE
-  USING (auth.role() = 'authenticated');
+  USING (is_admin());
 
--- participants: only authenticated users (admin) can access directly.
--- All public operations go through SECURITY DEFINER functions below.
+-- participants: only real admins can access the table directly.
+-- Public operations (register, list names for dropdown, reveal) go through RPC functions below.
 CREATE POLICY "Admin full access to participants"
   ON participants FOR ALL
-  USING (auth.role() = 'authenticated');
+  USING (is_admin());
 
 -- -------------------------------------------------------------------
--- 3. HELPER FUNCTIONS
+-- 4. HELPER FUNCTIONS
 -- -------------------------------------------------------------------
 
--- Generate a unique secret code like GEM-4821
+-- Generate a unique secret code (GEM-XXXXX with 5 digits for high entropy)
 CREATE OR REPLACE FUNCTION generate_secret_code()
 RETURNS text
 LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
 AS $$
 DECLARE
   code text;
   code_exists boolean;
 BEGIN
   LOOP
-    -- Generate 4-digit random number, zero-padded
-    code := 'GEM-' || lpad(floor(random() * 10000)::text, 4, '0');
+    -- 5-digit random number (10,000 to 99,999)
+    code := 'GEM-' || (10000 + floor(random() * 90000)::int)::text;
     SELECT EXISTS(SELECT 1 FROM participants WHERE secret_code = code)
       INTO code_exists;
     EXIT WHEN NOT code_exists;
@@ -85,8 +124,29 @@ END;
 $$;
 
 -- -------------------------------------------------------------------
--- 4. PUBLIC RPC FUNCTIONS (callable by anon users)
+-- 5. PUBLIC RPC FUNCTIONS (callable by anon users)
 -- -------------------------------------------------------------------
+
+-- Get list of registered participant names for dropdown selection (public)
+-- Only returns id and name, NEVER secret_code or partner_id
+CREATE OR REPLACE FUNCTION get_public_participants()
+RETURNS json
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+BEGIN
+  RETURN COALESCE(
+    (SELECT json_agg(
+      json_build_object(
+        'id', id,
+        'name', name
+      ) ORDER BY name ASC
+    ) FROM participants),
+    '[]'::json
+  );
+END;
+$$;
 
 -- Register a new participant
 -- Returns JSON: { id, name, secret_code }
@@ -130,7 +190,7 @@ BEGIN
 
   -- Check duplicate name (case-insensitive)
   IF EXISTS(SELECT 1 FROM participants WHERE lower(trim(name)) = lower(v_clean_name)) THEN
-    RAISE EXCEPTION 'Ya existe un participante con ese nombre. Si eres tú, contacta al organizador.';
+    RAISE EXCEPTION 'Ya existe un participante con ese nombre.';
   END IF;
 
   -- Generate unique code and insert
@@ -148,9 +208,9 @@ BEGIN
 END;
 $$;
 
--- Reveal partner for a given secret code
+-- Reveal partner by participant name (case-insensitive)
 -- Returns JSON: { participant_name, partner_name }
-CREATE OR REPLACE FUNCTION reveal_partner(p_secret_code text)
+CREATE OR REPLACE FUNCTION reveal_partner(p_name text)
 RETURNS json
 LANGUAGE plpgsql
 SECURITY DEFINER
@@ -160,9 +220,9 @@ DECLARE
   v_participant participants;
   v_partner participants;
   v_settings app_settings;
-  v_clean_code text;
+  v_clean_name text;
 BEGIN
-  v_clean_code := upper(trim(p_secret_code));
+  v_clean_name := trim(p_name);
 
   -- Check app state
   SELECT * INTO v_settings FROM app_settings WHERE id = 1;
@@ -171,11 +231,15 @@ BEGIN
     RAISE EXCEPTION 'El sorteo aún no se ha realizado';
   END IF;
 
-  -- Find participant
-  SELECT * INTO v_participant FROM participants WHERE secret_code = v_clean_code;
+  -- Find participant by name (case-insensitive) or by secret_code as fallback
+  SELECT * INTO v_participant
+  FROM participants
+  WHERE lower(trim(name)) = lower(v_clean_name)
+     OR upper(trim(secret_code)) = upper(v_clean_name)
+  LIMIT 1;
 
   IF v_participant.id IS NULL THEN
-    RAISE EXCEPTION 'Código secreto inválido. Verifica e intenta de nuevo.';
+    RAISE EXCEPTION 'Participante no encontrado. Selecciona tu nombre de la lista.';
   END IF;
 
   IF v_participant.partner_id IS NULL THEN
@@ -205,10 +269,10 @@ END;
 $$;
 
 -- -------------------------------------------------------------------
--- 5. ADMIN RPC FUNCTIONS (require authenticated session)
+-- 6. ADMIN RPC FUNCTIONS (strictly verified via is_admin())
 -- -------------------------------------------------------------------
 
--- Get all participants (admin only)
+-- Get all participants with full details (admin only)
 CREATE OR REPLACE FUNCTION get_participants_admin()
 RETURNS json
 LANGUAGE plpgsql
@@ -216,8 +280,8 @@ SECURITY DEFINER
 SET search_path = public
 AS $$
 BEGIN
-  IF auth.uid() IS NULL THEN
-    RAISE EXCEPTION 'No autorizado';
+  IF NOT is_admin() THEN
+    RAISE EXCEPTION 'No autorizado: se requieren privilegios de administrador';
   END IF;
 
   RETURN COALESCE(
@@ -228,7 +292,7 @@ BEGIN
         'secret_code', secret_code,
         'partner_id', partner_id,
         'created_at', created_at
-      ) ORDER BY created_at
+      ) ORDER BY created_at ASC
     ) FROM participants),
     '[]'::json
   );
@@ -243,8 +307,8 @@ SECURITY DEFINER
 SET search_path = public
 AS $$
 BEGIN
-  IF auth.uid() IS NULL THEN
-    RAISE EXCEPTION 'No autorizado';
+  IF NOT is_admin() THEN
+    RAISE EXCEPTION 'No autorizado: se requieren privilegios de administrador';
   END IF;
 
   UPDATE app_settings
@@ -263,14 +327,13 @@ SET search_path = public
 AS $$
 DECLARE
   v_count int;
-  v_ids uuid[];
   v_shuffled uuid[];
   i int;
   v_settings app_settings;
 BEGIN
-  -- Auth check
-  IF auth.uid() IS NULL THEN
-    RAISE EXCEPTION 'No autorizado';
+  -- Verify real admin
+  IF NOT is_admin() THEN
+    RAISE EXCEPTION 'No autorizado: se requieren privilegios de administrador';
   END IF;
 
   -- Acquire advisory lock (prevents concurrent draws)
@@ -306,7 +369,7 @@ BEGIN
   -- Clear any existing pairings
   UPDATE participants SET partner_id = NULL;
 
-  -- Create pairs: (1,2), (3,4), (5,6), ...
+  -- Create reciprocal pairs: (1,2), (3,4), (5,6), ...
   FOR i IN 1..array_length(v_shuffled, 1) BY 2 LOOP
     UPDATE participants SET partner_id = v_shuffled[i+1] WHERE id = v_shuffled[i];
     UPDATE participants SET partner_id = v_shuffled[i] WHERE id = v_shuffled[i+1];
@@ -329,9 +392,13 @@ SECURITY DEFINER
 SET search_path = public
 AS $$
 BEGIN
-  IF auth.uid() IS NULL THEN
-    RAISE EXCEPTION 'No autorizado';
+  -- Verify real admin
+  IF NOT is_admin() THEN
+    RAISE EXCEPTION 'No autorizado: se requieren privilegios de administrador';
   END IF;
+
+  -- Acquire advisory lock to avoid race conditions with perform_draw
+  PERFORM pg_advisory_xact_lock(73638105);
 
   UPDATE participants SET partner_id = NULL;
   UPDATE app_settings
@@ -348,8 +415,8 @@ SECURITY DEFINER
 SET search_path = public
 AS $$
 BEGIN
-  IF auth.uid() IS NULL THEN
-    RAISE EXCEPTION 'No autorizado';
+  IF NOT is_admin() THEN
+    RAISE EXCEPTION 'No autorizado: se requieren privilegios de administrador';
   END IF;
 
   UPDATE app_settings
@@ -359,12 +426,13 @@ END;
 $$;
 
 -- -------------------------------------------------------------------
--- 6. GRANT EXECUTE (ensure anon can call public functions)
+-- 7. GRANT EXECUTE
 -- -------------------------------------------------------------------
 
-GRANT EXECUTE ON FUNCTION register_participant(text) TO anon;
-GRANT EXECUTE ON FUNCTION reveal_partner(text) TO anon;
-GRANT EXECUTE ON FUNCTION get_participant_count() TO anon;
+GRANT EXECUTE ON FUNCTION get_public_participants() TO anon, authenticated;
+GRANT EXECUTE ON FUNCTION register_participant(text) TO anon, authenticated;
+GRANT EXECUTE ON FUNCTION reveal_partner(text) TO anon, authenticated;
+GRANT EXECUTE ON FUNCTION get_participant_count() TO anon, authenticated;
 
 GRANT EXECUTE ON FUNCTION get_participants_admin() TO authenticated;
 GRANT EXECUTE ON FUNCTION toggle_registration(boolean) TO authenticated;
