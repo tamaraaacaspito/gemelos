@@ -8,7 +8,7 @@ export const EVENT_CONFIG = {
   name: 'Gemelos',
 
   /** Main emoji */
-  emoji: '👯‍♀️',
+  emoji: '✨',
 
   /** Tagline shown below the title */
   tagline: 'Dos outfits. Una misión.',
